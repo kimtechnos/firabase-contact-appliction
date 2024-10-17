@@ -1,4 +1,3 @@
-// Import necessary functions from Firebase SDK
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 
@@ -10,12 +9,13 @@ const firebaseConfig = {
   storageBucket: "firabase-contact-appliction.appspot.com",
   messagingSenderId: "458079472296",
   appId: "1:458079472296:web:9b047d49a046691366109d",
+ 
 };
 
 // Initialize Firebase App
 const app = initializeApp(firebaseConfig);
 
-// Get a reference to the database
+// Get a reference to the Realtime Database
 const fireDb = getDatabase(app);
 
 // Export the database reference

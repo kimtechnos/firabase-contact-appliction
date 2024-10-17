@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import "./AddEdit.css";
-import fireDb from "../firebase";
+
 import { toast } from "react-toastify";
+import { getDatabase, ref, push } from "firebase/database";
 
 const initialState = {
   name: "",
@@ -19,7 +20,24 @@ const AddEdit = () => {
     const { name, value } = e.target;
     setState({ ...state, [name]: value });
   };
-  const handleSubmit = () => {};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!name || !email || !contact) {
+      toast.error("Please provide value in each input field");
+    } else {
+      const db = getDatabase(); // Initialize the Firebase database
+      const contactsRef = ref(db, "contacts"); // Reference to "contacts" node
+      push(contactsRef, { name, email, contact }) // Push data to the reference
+        .then(() => {
+          toast.success("Contact added successfully");
+          setState({ name: "", email: "", contact: "" });
+        })
+        .catch((error) => {
+          toast.error("Error submitting contacts: " + error.message);
+        });
+    }
+  };
+
   return (
     <div style={{ marginTop: "100px" }}>
       <form
