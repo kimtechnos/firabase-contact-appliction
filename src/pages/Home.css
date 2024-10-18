@@ -24,3 +24,24 @@
 .styled-table tbody tr:last-of-type {
   border-bottom: 2px solid #009879;
 }
+.btn {
+  border: none;
+  color: white;
+  padding: 5px 8px;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 5px;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+.btn-edit {
+  background-color: rgb(0, 153, 255);
+}
+.btn-delete {
+  background-color: rgb(225, 28, 28);
+}
+.btn-view {
+  background-color: #bdb4b4;
+  color: black;
+}

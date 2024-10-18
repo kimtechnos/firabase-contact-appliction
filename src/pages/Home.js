@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import fireDb from "../firebase";
 import { Link } from "react-router-dom";
 import "./Home.css";
-import { getDatabase, onValue, ref } from "firebase/database";
+import { getDatabase, onValue, ref, remove } from "firebase/database";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const [data, setData] = useState({});
@@ -18,6 +19,21 @@ const Home = () => {
     });
     return () => unsubcribe();
   }, []);
+  const onDelete = (id) => {
+    if (
+      window.confirm("Are you sure that you want to delete that contact ? ")
+    ) {
+      const db = getDatabase();
+      const contactsRef = ref(db, `contacts/${id}`);
+      remove(contactsRef)
+        .then(() => {
+          toast.success("Contact deleted successfully");
+        })
+        .catch((err) => {
+          toast.error(err.message);
+        });
+    }
+  };
 
   return (
     <div style={{ marginTop: "100px" }}>
@@ -43,7 +59,12 @@ const Home = () => {
                   <Link to={`/update/${id}`}>
                     <button className="btn btn-edit">Edit</button>
                   </Link>
-                  <button className="btn btn-delete">Delete</button>
+                  <button
+                    className="btn btn-delete"
+                    onClick={() => onDelete(id)}
+                  >
+                    Delete
+                  </button>
                   <Link to={`/view/${id}`}>
                     <button className="btn btn-view">View</button>
                   </Link>
