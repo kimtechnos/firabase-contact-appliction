@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import fireDb from "../firebase";
+import { useNavigate, useParams } from "react-router-dom";
 import "./AddEdit.css";
-
 import { toast } from "react-toastify";
-import { getDatabase, ref, push } from "firebase/database";
+import { getDatabase, ref, push, update, onValue } from "firebase/database";
 
 const initialState = {
   name: "",
@@ -14,27 +14,72 @@ const initialState = {
 const AddEdit = () => {
   const [state, setState] = useState(initialState);
   const [data, setData] = useState({});
-
   const { name, email, contact } = state;
+  const navigate = useNavigate();
+  const { id } = useParams(); // Get the id from the URL
+
+  // Fetch all contacts data once
+  useEffect(() => {
+    const db = getDatabase();
+    const contactsRef = ref(db, "contacts");
+
+    // Fetch data for editing
+    const unsubscribe = onValue(contactsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setData(snapshot.val());
+      } else {
+        setData({});
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Pre-fill the form if editing
+  useEffect(() => {
+    if (id && data[id]) {
+      setState({ ...data[id] });
+    } else {
+      setState({ ...initialState }); // Reset the form for adding new contacts
+    }
+  }, [id, data]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setState({ ...state, [name]: value });
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name || !email || !contact) {
       toast.error("Please provide value in each input field");
     } else {
-      const db = getDatabase(); // Initialize the Firebase database
-      const contactsRef = ref(db, "contacts"); // Reference to "contacts" node
-      push(contactsRef, { name, email, contact }) // Push data to the reference
-        .then(() => {
-          toast.success("Contact added successfully");
-          setState({ name: "", email: "", contact: "" });
-        })
-        .catch((error) => {
-          toast.error("Error submitting contacts: " + error.message);
-        });
+      const db = getDatabase();
+      const contactsRef = ref(db, "contacts");
+
+      if (id) {
+        // Update contact
+        const contactToUpdate = ref(db, `contacts/${id}`);
+        update(contactToUpdate, { name, email, contact })
+          .then(() => {
+            toast.success("Contact updated successfully");
+            navigate("/"); // Redirect after success
+          })
+          .catch((error) => {
+            toast.error("Error updating contact: " + error.message);
+          });
+      } else {
+        // Add new contact
+        push(contactsRef, { name, email, contact })
+          .then(() => {
+            toast.success("Contact added successfully");
+            setState({ name: "", email: "", contact: "" });
+            navigate("/"); // Redirect after success
+          })
+          .catch((error) => {
+            toast.error("Error adding contact: " + error.message);
+          });
+      }
     }
   };
 
@@ -55,7 +100,7 @@ const AddEdit = () => {
           name="name"
           id="name"
           placeholder="Your name..."
-          value={name}
+          value={name || ""}
           onChange={handleInputChange}
         />
         <label htmlFor="email">Email</label>
@@ -64,7 +109,7 @@ const AddEdit = () => {
           name="email"
           id="email"
           placeholder="Your Email..."
-          value={email}
+          value={email || ""}
           onChange={handleInputChange}
         />
         <label htmlFor="contact">Contact</label>
@@ -73,10 +118,10 @@ const AddEdit = () => {
           name="contact"
           id="contact"
           placeholder="Your Contact No. ..."
-          value={contact}
+          value={contact || ""}
           onChange={handleInputChange}
         />
-        <input type="submit" value="save" />
+        <input type="submit" value={id ? "Update" : "Save"} />
       </form>
     </div>
   );
