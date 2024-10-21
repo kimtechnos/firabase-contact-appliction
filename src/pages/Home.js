@@ -9,7 +9,7 @@ const Home = () => {
   const [data, setData] = useState({});
   useEffect(() => {
     const db = getDatabase(); //get the database instance
-    const contactsRef = ref(db, "contacts"); //ref the contacts in the firebase
+    const contactsRef = ref(db, "contacts"); //refrences contacts in the database
     const unsubcribe = onValue(contactsRef, (snapshot) => {
       if (snapshot.exists()) {
         setData(snapshot.val());

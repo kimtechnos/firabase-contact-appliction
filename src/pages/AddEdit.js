@@ -3,14 +3,7 @@ import fireDb from "../firebase";
 import { useNavigate, useParams } from "react-router-dom";
 import "./AddEdit.css";
 import { toast } from "react-toastify";
-import {
-  getDatabase,
-  ref,
-  push,
-  update,
-  onValue,
-  set,
-} from "firebase/database";
+import { getDatabase, ref, push, update, onValue } from "firebase/database";
 
 const initialState = {
   name: "",
