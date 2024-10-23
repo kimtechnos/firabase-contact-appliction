@@ -45,3 +45,20 @@
   background-color: #bdb4b4;
   color: black;
 }
+.dropdown {
+  width: 200px;
+  margin: 5px;
+}
+.btn-reset {
+  background-color: darkolivegreen;
+  color: black;
+  margin: 10px;
+}
+.btn-active {
+  background-color: #808c4a;
+  color: black;
+}
+.btn-inactive {
+  background-color: #445f61;
+  color: black;
+}
